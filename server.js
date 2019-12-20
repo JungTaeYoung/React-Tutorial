@@ -11,6 +11,8 @@ const data = fs.readFileSync('./database.json')
 const conf = JSON.parse(data);
 const mysql = require('mysql')
 
+const multer = require('multer');
+const upload = multer({ dest: './upload' })
 const connection = mysql.createConnection({
   host: conf.host,
   user: conf.user,
@@ -20,10 +22,9 @@ const connection = mysql.createConnection({
 })
 connection.connect();
 
-const multer = require('multer');
-const upload = multer({dest: './upload'})
 
 app.get('/api/customers', (req, res) => {
+  console.log(333)
   connection.query(
     "SELECT * FROM customer",
     (err, rows, fields) => {
@@ -33,24 +34,23 @@ app.get('/api/customers', (req, res) => {
 })
 
 app.use('/image', express.static('./upload'))
-app.post('/api/customers'), upload.single('image'), (req, res) => {
+app.post('/api/customers', upload.single('image'), (req, res) => {
+  console.log(33)
   let sql = 'INSERT INTO customer VALUES (null, ?, ?, ?, ?, ?)';
   let image = '/image/' + req.file.filename;
   let name = req.body.name;
   let birthday = req.body.birthday;
   let gender = req.body.gender;
   let job = req.body.job;
-  console.log(image)
-  console.log(name)
-  console.log(birthday)
-  console.log(gender)
-  console.log(job)
-  let params = [image, name, birthday, gender , job]
-  connection.query(sql, params, (err, rows, fields) => {
-    res.send(rows);
-    console.log(err)
-    console.log(rows)
-  })
-}
+
+  let params = [image, name, birthday, gender, job]
+  connection.query(sql, params,
+    (err, rows, fields) => {
+      res.send(rows);
+      console.log(err)
+      console.log(rows)
+    }
+  )
+})
 
 app.listen(port, () => console.log(`listening on port ${port}`));
