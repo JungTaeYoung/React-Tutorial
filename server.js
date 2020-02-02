@@ -50,6 +50,30 @@ app.post('/api/customers', upload.single('image'), (req, res) => {
     }
   )
 })
+app.post('/api/customersupdate', upload.single('image'), (req, res) => {
+  // res.send('dd');
+  console.log(req.body.name)
+  let sql = 'UPDATE customer SET name=?, birthday=?, gender=?, job=? WHERE id=?';
+  let id = req.body.id;
+  // let image;
+  // if ((req.body.image).indexOf("image/") != -1) {
+  //   image = req.body.image;
+  // } else {
+  //   image = '/image/' + req.body.image;
+  // }
+  let name = req.body.name;
+  let birthday = req.body.birthday;
+  let gender = req.body.gender;
+  let job = req.body.job;
+
+  //let params = [image, name, birthday, gender, job, id]
+  let params = [name, birthday, gender, job, id]
+  connection.query(sql, params,
+    (err, rows, fields) => {
+      res.send(rows);
+    }
+  )
+})
 
 app.delete('/api/customers/:id', (req, res) => {
   let sql = 'UPDATE customer SET isDeleted = 1 where id = ?';

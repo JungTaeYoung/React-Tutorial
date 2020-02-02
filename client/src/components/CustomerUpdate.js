@@ -1,5 +1,5 @@
 import React from 'react';
-import { post } from 'axios';
+import { post, patch } from 'axios';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -16,22 +16,23 @@ const styles = theme => ({
 })
 
 
-class CustomerAdd extends React.Component {
+class CustomerUpdate extends React.Component {
   constructor(props) {
     super(props);
+    console.log(props.image)
     this.state = {
       file: null,
-      userName: '',
-      birthday: '',
-      gender: '',
-      job: '',
-      fileName: ''
+      userName: props.name,
+      birthday: props.birthday,
+      gender: props.gender,
+      job: props.job,
+      fileName: props.image
     }
   }
 
   handleFormSubmit = (e) => {
     e.preventDefault()
-    this.addCustomer()
+    this.updateCustomer()
       .then((response) => {
         this.props.stateRefresh();
       })
@@ -60,10 +61,11 @@ class CustomerAdd extends React.Component {
     this.setState(nextState);
   }
 
-  addCustomer = () => {
-    const url = '/api/customers';
+  updateCustomer = () => {
+    const url = '/api/customersupdate';
     const formData = new FormData();
-    formData.append('image', this.state.file)
+    formData.append('id', this.props.id)
+    formData.append('image', this.state.fileName)
     formData.append('name', this.state.userName)
     formData.append('birthday', this.state.birthday)
     formData.append('gender', this.state.gender)
@@ -71,13 +73,15 @@ class CustomerAdd extends React.Component {
     console.log(formData)
     const config = {
       headers: {
-        'content-type': 'multipart/form-data'
+        'content-type': 'application/x-www-form-urlencoded'
       }
     }
     return post(url, formData, config)
+
   }
 
   handleClickOpen = () => {
+
     this.setState({
       open: true
     })
@@ -85,13 +89,13 @@ class CustomerAdd extends React.Component {
 
   handleClose = () => {
     this.setState({
+      open: false,
       file: null,
-      userName: '',
-      birthday: '',
-      gender: '',
-      job: '',
-      fileName: '',
-      open: false
+      userName: this.props.name,
+      birthday: this.props.birthday,
+      gender: this.props.gender,
+      job: this.props.job,
+      fileName: this.props.image
     })
   }
 
@@ -99,13 +103,11 @@ class CustomerAdd extends React.Component {
     const { classes } = this.props;
     return (
       <div>
-        <Button variant="contained" color="primary" onClick={this.handleClickOpen}>
-          고객 추가하기
-        </Button>
+        <Button variant="contained" color="primary" onClick={this.handleClickOpen}>수정</Button>
         <Dialog open={this.state.open} onClose={this.handleClose}>
-          <DialogTitle>고객 추가</DialogTitle>
+          <DialogTitle>고객 정보 수정</DialogTitle>
           <DialogContent>
-            <input className={classes.hidden} accept="image/*" id="raised-button-file" type="file" file={this.state.file} value={this.state.fileName} onChange={this.handleFileChange} />
+            <input className={classes.hidden} accept="image/*" id="raised-button-file" type="file" file={this.state.file} onChange={this.handleFileChange} />
             <label htmlFor="raised-button-file">
               <Button variant="contained" color="primary" component="span" name="file">
                 {this.state.fileName === "" ? "프로필 이미지 선택" : this.state.fileName}
@@ -118,7 +120,7 @@ class CustomerAdd extends React.Component {
             <TextField label="직업" type="text" name="job" value={this.state.job} onChange={this.handleValueChange} /><br />
           </DialogContent>
           <DialogActions>
-            <Button variant="contained" color="primary" onClick={this.handleFormSubmit}>추가</Button>
+            <Button variant="contained" color="primary" onClick={this.handleFormSubmit}>수정</Button>
             <Button variant="outlined" color="primary" onClick={this.handleClose}>닫기</Button>
           </DialogActions>
         </Dialog>
@@ -127,4 +129,4 @@ class CustomerAdd extends React.Component {
   }
 }
 
-export default withStyles(styles)(CustomerAdd);
+export default withStyles(styles)(CustomerUpdate);
