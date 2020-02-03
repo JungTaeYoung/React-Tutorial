@@ -65,7 +65,7 @@ class CustomerUpdate extends React.Component {
     const url = '/api/customersupdate';
     const formData = new FormData();
     formData.append('id', this.props.id)
-    formData.append('image', this.state.fileName)
+    formData.append('image', this.state.file)
     formData.append('name', this.state.userName)
     formData.append('birthday', this.state.birthday)
     formData.append('gender', this.state.gender)
@@ -73,7 +73,8 @@ class CustomerUpdate extends React.Component {
     console.log(formData)
     const config = {
       headers: {
-        'content-type': 'application/x-www-form-urlencoded'
+        // 'content-type': 'application/x-www-form-urlencoded'
+        'content-type': 'multipart/form-data'
       }
     }
     return post(url, formData, config)
